@@ -1,0 +1,102 @@
+[gd_scene load_steps=10 format=3 uid="uid://breu2jq576iwc"]
+
+[ext_resource type="Texture2D" uid="uid://cvvikbpcyeaq2" path="res://assets/yellowman.png" id="1_k4ayx"]
+
+[sub_resource type="GDScript" id="GDScript_vlybo"]
+script/source = "extends CharacterBody2D
+
+var speed = 40
+var player = null
+var playerChase = false
+
+
+
+func _physics_process(delta):
+	if playerChase:
+		position += (player.position - position)/speed
+		move_and_collide(Vector2(0,0))
+		
+		
+
+func _on_area_2d_body_entered(body):
+	player = body
+	playerChase = true
+
+func _on_area_2d_body_exited(body):
+	player = null 
+	playerChase = false 
+	
+"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_onpth"]
+atlas = ExtResource("1_k4ayx")
+region = Rect2(0, 0, 17, 23)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mqtid"]
+atlas = ExtResource("1_k4ayx")
+region = Rect2(0, 23, 17, 23)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ec4uo"]
+atlas = ExtResource("1_k4ayx")
+region = Rect2(17, 0, 17, 23)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j7ndc"]
+atlas = ExtResource("1_k4ayx")
+region = Rect2(17, 23, 17, 23)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ly1oo"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_onpth")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mqtid")
+}],
+"loop": true,
+"name": &"walkdown",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ec4uo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j7ndc")
+}],
+"loop": true,
+"name": &"walkingup",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_b2srj"]
+radius = 44.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_usw4f"]
+size = Vector2(10, 4)
+
+[node name="gulman" type="CharacterBody2D"]
+z_index = 1
+script = SubResource("GDScript_vlybo")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0, -12)
+sprite_frames = SubResource("SpriteFrames_ly1oo")
+animation = &"walkdown"
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(1, -8)
+shape = SubResource("CircleShape2D_b2srj")
+debug_color = Color(0.917647, 0.27451, 0.192157, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(1, -2)
+shape = SubResource("RectangleShape2D_usw4f")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
